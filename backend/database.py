@@ -13,7 +13,7 @@ import os
 # Database URL from environment
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql://user:password@localhost/crop_advisory_db"
+    "postgresql://postgres:password@localhost/crop_advisory_db"
 )
 
 # Create engine

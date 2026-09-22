@@ -79,7 +79,7 @@ class User(Base):
     hashed_password = Column(String(100), nullable=False)
     role = Column(String(20), default="officer")  # admin, officer, viewer
     district = Column(String(100), nullable=True)
-    is_active = Column(Column, default=True)
+    is_active = Column(Integer, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 def get_db():

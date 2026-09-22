@@ -1,0 +1,144 @@
+
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║     🇧🇩 NATIONAL AI-ENABLED CROP HEALTH ADVISORY SYSTEM         ║
+║                                                                  ║
+║              DEPLOYMENT PACKAGE v1.0.0                           ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📦 PACKAGE CONTENTS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 Core Application (Backend)
+   ├── app.py                 - FastAPI main application
+   ├── ai_model.py            - CNN Symptom Classifier (11 classes)
+   ├── rule_engine.py         - Plantwise Elimination Logic
+   ├── advisory_engine.py     - BRRI/BARI/DAE Knowledge Base
+   ├── bangla_explainer.py    - Farmer-friendly Bangla UI
+   ├── whatsapp_webhook.py    - WhatsApp Cloud API
+   ├── database.py            - PostgreSQL models
+   ├── security.py            - JWT & Rate Limiting
+   └── models.py              - Pydantic schemas
+
+📁 Infrastructure
+   ├── Dockerfile             - Container definition
+   ├── docker-compose.yml     - Multi-service orchestration
+   ├── nginx.conf             - Reverse proxy + SSL
+   ├── requirements.txt       - Python dependencies
+   └── .env.example           - Configuration template
+
+📁 Mobile Application
+   ├── main.dart              - Flutter cross-platform app
+   └── pubspec.yaml           - Flutter dependencies
+
+📁 Dashboard & Analytics
+   ├── schema.sql             - PostgreSQL database schema
+   └── analytics_queries.sql  - MIS dashboard queries
+
+📁 Deployment Tools
+   ├── setup.sh               - Universal Linux/macOS installer
+   ├── setup.bat              - Windows installer
+   ├── auto_deploy.py         - Advanced Python manager
+   ├── one_click_deploy.sh    - Quick bash deployment
+   ├── install_wizard.py      - Interactive setup wizard
+   ├── deploy.sh              - Legacy deployment script
+   ├── crop-advisory.service  - systemd auto-start
+   └── test_system.py         - Automated testing
+
+📁 CI/CD & DevOps
+   ├── .github/workflows/deploy.yml  - GitHub Actions
+   └── test_system.py               - Test suite
+
+📁 Documentation
+   ├── README.md              - Main documentation
+   ├── PACKAGE_README.md      - Package guide
+   ├── DEPLOYMENT_GUIDE.md    - Deployment manual
+   └── DEPLOYMENT_PREVIEW.html - Visual preview
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 DEPLOYMENT METHODS:
+
+1. UNIVERSAL SETUP (Recommended)
+   ┌─────────────────────────────────────┐
+   │ chmod +x setup.sh                   │
+   │ ./setup.sh deploy                   │
+   └─────────────────────────────────────┘
+   ✓ Auto-installs Docker if missing
+   ✓ Generates SSL certificates
+   ✓ Sets up environment
+   ✓ Builds and deploys all services
+   ✓ Performs health checks
+
+2. WINDOWS
+   ┌─────────────────────────────────────┐
+   │ setup.bat                           │
+   └─────────────────────────────────────┘
+   ✓ One-click Windows deployment
+
+3. PYTHON MANAGER
+   ┌─────────────────────────────────────┐
+   │ python auto_deploy.py deploy        │
+   │ python auto_deploy.py status        │
+   │ python auto_deploy.py logs          │
+   │ python auto_deploy.py backup        │
+   └─────────────────────────────────────┘
+   ✓ Cross-platform advanced control
+
+4. INTERACTIVE WIZARD
+   ┌─────────────────────────────────────┐
+   │ python install_wizard.py              │
+   └─────────────────────────────────────┘
+   ✓ Guided configuration
+   ✓ Custom settings
+
+5. MANUAL DOCKER
+   ┌─────────────────────────────────────┐
+   │ cd backend                            │
+   │ docker-compose up -d                  │
+   └─────────────────────────────────────┘
+   ✓ For developers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 SYSTEM REQUIREMENTS:
+
+   CPU:     2+ cores (4 recommended)
+   RAM:     4+ GB (8 recommended)
+   Disk:    20+ GB SSD (50 recommended)
+   OS:      Ubuntu 20.04+ / Windows 10+ / macOS 11+
+   Docker:  20.10+ with Docker Compose
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🌐 ACCESS POINTS (After Deployment):
+
+   API:          http://localhost:8000
+   API Docs:     http://localhost:8000/api/docs
+   WhatsApp:     http://localhost:8000/api/v1/whatsapp/webhook
+   Health:       http://localhost:8000/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛡️ AI GOVERNANCE COMPLIANCE:
+
+   ✓ No final disease confirmation (AI is decision support only)
+   ✓ No pesticide dosage (ETL-based recommendations only)
+   ✓ No unapproved products (DAE approved list only)
+   ✓ Mandatory disclaimer in all outputs
+   ✓ Human officer oversight required
+   ✓ All outputs logged and auditable
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 SUPPORT:
+
+   Technical:    DAE IT Division
+   Agricultural: 16263 (DAE Hotline)
+   Emergency:    Upazila Agriculture Officer
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Built with ❤️ for Bangladesh Farmers 🇧🇩🌾
+Ministry of Agriculture, Government of Bangladesh

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National AI-Enabled Crop Health Advisory System - Bangladesh</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; 
+            color: #333;
+        }
+        .header { 
+            background: linear-gradient(135deg, #006A4E 0%, #004d3a 100%); 
+            color: white; 
+            padding: 1.5rem 2rem; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .card { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 2rem; 
+            margin-bottom: 2rem; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .grid { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .tab { 
+            padding: 0.75rem 1.5rem; 
+            background: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .tab:hover { background: #e8f5e9; }
+        .tab.active { background: #006A4E; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .metric { text-align: center; padding: 1.5rem; background: #f5f5f5; border-radius: 12px; }
+        .metric-value { font-size: 2.5rem; font-weight: 700; color: #006A4E; }
+        .metric-label { color: #666; font-size: 0.875rem; margin-top: 0.5rem; }
+        .flow-step { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            border: 2px solid #e0e0e0;
+            text-align: center;
+            flex: 1;
+        }
+        .flow-step.active { border-color: #006A4E; background: #e8f5e9; }
+        .alert { 
+            background: #fff3e0; 
+            border-left: 4px solid #ff9800; 
+            padding: 1rem; 
+            margin: 1rem 0; 
+            border-radius: 0 8px 8px 0;
+        }
+        .code-block { 
+            background: #1e293b; 
+            color: #e2e8f0; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        .phone-mockup {
+            width: 300px; height: 600px; background: #1a1a1a;
+            border-radius: 40px; padding: 1rem; margin: 0 auto;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+        .phone-screen { 
+            width: 100%; height: 100%; background: white; 
+            border-radius: 32px; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .feature-list { list-style: none; }
+        .feature-list li { 
+            display: flex; align-items: flex-start; gap: 0.75rem; 
+            padding: 0.75rem 0; border-bottom: 1px solid #e0e0e0; 
+        }
+        .btn { 
+            display: inline-block; padding: 0.75rem 1.5rem; 
+            background: #006A4E; color: white; text-decoration: none; 
+            border-radius: 8px; font-weight: 600; margin-top: 1rem;
+        }
+        .status-badge { 
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem; background: #dcfce7; color: #166534;
+            border-radius: 9999px; font-weight: 600; font-size: 0.875rem;
+        }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #e8f5e9; font-weight: 600; color: #006A4E; }
+        .phase-timeline { display: flex; justify-content: space-between; margin: 2rem 0; position: relative; }
+        .phase { text-align: center; flex: 1; position: relative; z-index: 1; }
+        .phase-dot { 
+            width: 24px; height: 24px; background: #006A4E; 
+            border-radius: 50%; margin: 0 auto 0.5rem; border: 4px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .phase.active .phase-dot { background: #ff9800; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">🇧🇩 National AI-Enabled Crop Health Advisory System</h1>
+                <p style="opacity: 0.9; font-size: 0.875rem;">Ministry of Agriculture | Government of Bangladesh | Plantwise Protocol</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.75rem;">
+                Government Grade
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Navigation -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
+            <button class="tab" onclick="showTab('architecture')">🏗️ Architecture</button>
+            <button class="tab" onclick="showTab('ai')">🤖 AI Engine</button>
+            <button class="tab" onclick="showTab('whatsapp')">💬 WhatsApp</button>
+            <button class="tab" onclick="showTab('mobile')">📱 Mobile</button>
+            <button class="tab" onclick="showTab('dashboard')">📈 Dashboard</button>
+            <button class="tab" onclick="showTab('compliance')">⚖️ Governance</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">🎯 System Objective</h2>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">
+                        Build a national-scale AI-assisted crop diagnosis and advisory platform that accepts crop images via mobile/WhatsApp, 
+                        performs symptom-first classification using Plantwise protocol, and generates Bangladesh-authoritative advisory 
+                        compliant with DAE, BRRI, BARI, SRDI, and BARC guidelines.
+                    </p>
+                    <div class="status-badge">
+                        <span>●</span> Operational Status: Pilot Phase
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1.5rem;">
+                        <div class="metric">
+                            <div class="metric-value">11</div>
+                            <div class="metric-label">Symptom Classes</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">13+</div>
+                            <div class="metric-label">Crop Types</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">64</div>
+                            <div class="metric-label">Districts Target</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">16.5M</div>
+                            <div class="metric-label">Farmers</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">🏛️ Government Compliance</h2>
+                    <ul class="feature-list">
+                        <li><span style="color: #006A4E; font-weight: bold;">✓</span> <div><strong>DAE</strong> - Department of Agricultural Extension (Pesticide approval)</div></li>
+                        <li><span style="color: #006A4E; font-weight: bold;">✓</span> <div><strong>BRRI</strong> - Bangladesh Rice Research Institute (Rice diseases)</div></li>
+                        <li><span style="color: #006A4E; font-weight: bold;">✓</span> <div><strong>BARI</strong> - Bangladesh Agricultural Research Institute (Vegetables/Fruits)</div></li>
+                        <li><span style="color: #006A4E; font-weight: bold;">✓</span> <div><strong>SRDI</strong> - Soil Resource Development Institute (Nutrient management)</div></li>
+                        <li><span style="color: #006A4E; font-weight: bold;">✓</span> <div><strong>BARC</strong> - Bangladesh Agricultural Research Council (IPM guidelines)</div></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <h2 style="color: #006A4E; margin-bottom: 1.5rem;">🔄 Implementation Roadmap</h2>
+                <div class="phase-timeline">
+                    <div class="phase">
+                        <div class="phase-dot" style="background: #22c55e;"></div>
+                        <div style="font-size: 0.75rem; color: #666;">Phase 1</div>
+                        <div style="font-weight: 700;">Pilot</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">1 District<br>Month 1-3</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot" style="background: #22c55e;"></div>
+                        <div style="font-size: 0.75rem; color: #666;">Phase 2</div>
+                        <div style="font-weight: 700;">Expansion</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">10 Districts<br>Month 4-6</div>
+                    </div>
+                    <div class="phase active">
+                        <div class="phase-dot"></div>
+                        <div style="font-size: 0.75rem; color: #666;">Phase 3</div>
+                        <div style="font-weight: 700;">National</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">All 64 Districts<br>Month 7-12</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot" style="background: #e0e0e0;"></div>
+                        <div style="font-size: 0.75rem; color: #666;">Phase 4</div>
+                        <div style="font-weight: 700;">Climate AI</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">Weather Integration<br>Year 2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert">
+                <strong style="color: #e65100;">⚠️ AI Governance Notice:</strong> This system is strictly 
+                <strong>Decision Support</strong> - not final authority. AI must NOT provide final disease confirmation, 
+                pesticide dosage, or override human officer decisions. All outputs are logged and auditable. 
+                Human-in-the-loop governance is mandatory.
+            </div>
+        </div>
+
+        <!-- Architecture Tab -->
+        <div id="architecture" class="tab-content">
+            <div class="card">
+                <h2 style="color: #006A4E; margin-bottom: 1.5rem;">🏗️ System Architecture Flow</h2>
+                <div style="display: flex; align-items: center; gap: 1rem; overflow-x: auto; padding: 1rem;">
+                    <div class="flow-step active">
+                        <div style="width: 32px; height: 32px; background: #006A4E; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem;">1</div>
+                        <div style="font-weight: 600;">Farmer Input</div>
+                        <div style="font-size: 0.75rem; color: #666;">Mobile/WhatsApp Image</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #006A4E;">→</div>
+                    <div class="flow-step">
+                        <div style="width: 32px; height: 32px; background: #006A4E; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem;">2</div>
+                        <div style="font-weight: 600;">FastAPI Backend</div>
+                        <div style="font-size: 0.75rem; color: #666;">Secure API with JWT</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #006A4E;">→</div>
+                    <div class="flow-step">
+                        <div style="width: 32px; height: 32px; background: #006A4E; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem;">3</div>
+                        <div style="font-weight: 600;">AI Classifier</div>
+                        <div style="font-size: 0.75rem; color: #666;">CNN (224x224) 11 Classes</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #006A4E;">→</div>
+                    <div class="flow-step">
+                        <div style="width: 32px; height: 32px; background: #006A4E; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem;">4</div>
+                        <div style="font-weight: 600;">Rule Engine</div>
+                        <div style="font-size: 0.75rem; color: #666;">Plantwise Logic</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #006A4E;">→</div>
+                    <div class="flow-step">
+                        <div style="width: 32px; height: 32px; background: #006A4E; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem;">5</div>
+                        <div style="font-weight: 600;">Advisory KB</div>
+                        <div style="font-size: 0.75rem; color: #666;">BRRI/BARI/DAE</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #006A4E;">→</div>
+                    <div class="flow-step">
+                        <div style="width: 32px; height: 32px; background: #006A4E; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 0.5rem;">6</div>
+                        <div style="font-weight: 600;">Bangla Output</div>
+                        <div style="font-size: 0.75rem; color: #666;">Farmer-Friendly</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card" style="border: 2px solid #006A4E;">
+                    <h3 style="color: #006A4E; margin-bottom: 1rem;">⚡ Backend Stack</h3>
+                    <ul style="list-style: none; line-height: 2;">
+                        <li>⚡ FastAPI (Python)</li>
+                        <li>🧠 TensorFlow/PyTorch</li>
+                        <li>🗄️ PostgreSQL</li>
+                        <li>⚡ Redis (Caching)</li>
+                        <li>🐳 Docker</li>
+                        <li>🌐 NGINX</li>
+                    </ul>
+                </div>
+                <div class="card" style="border: 2px solid #ff9800;">
+                    <h3 style="color: #ff9800; margin-bottom: 1rem;">📱 Frontend Stack</h3>
+                    <ul style="list-style: none; line-height: 2;">
+                        <li>📱 Flutter (Android/iOS)</li>
+                        <li>💬 WhatsApp Cloud API</li>
+                        <li>🎨 Material Design 3</li>
+                        <li>🔤 Noto Sans Bengali</li>
+                    </ul>
+                </div>
+                <div class="card" style="border: 2px solid #f44336;">
+                    <h3 style="color: #f44336; margin-bottom: 1rem;">📊 Analytics Stack</h3>
+                    <ul style="list-style: none; line-height: 2;">
+                        <li>📊 Metabase/Superset</li>
+                        <li>📈 Prometheus</li>
+                        <li>🗺️ Geo-mapping</li>
+                        <li>⚠️ Early Warning System</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Engine Tab -->
+        <div id="ai" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">🧠 Symptom-First Classifier</h2>
+                    <div class="alert" style="margin-bottom: 1rem;">
+                        <strong>🚫 Critical Rule:</strong> No disease names in training labels! Only symptoms are classified to avoid premature diagnosis.
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Symptom Class</th>
+                            <th>Bangla Name</th>
+                            <th>Confidence</th>
+                        </tr>
+                        <tr><td>Healthy</td><td>সুস্থ</td><td>> 0.8</td></tr>
+                        <tr><td>Leaf Spot</td><td>পাতা পচা/দাগ</td><td>> 0.6</td></tr>
+                        <tr><td>Yellowing</td><td>হলুদ হয়ে যাওয়া</td><td>> 0.6</td></tr>
+                        <tr><td>Wilt</td><td>গাছ শুকিয়ে যাওয়া</td><td>> 0.6</td></tr>
+                        <tr><td>Mosaic</td><td>মোজাইক প্যাটার্ন</td><td>> 0.6</td></tr>
+                        <tr><td>Leaf Distortion</td><td>পাতা বিকৃতি</td><td>> 0.6</td></tr>
+                        <tr><td>Galls</td><td>গাল/ফোলা</td><td>> 0.6</td></tr>
+                        <tr><td>Necrosis/Blight</td><td>পাতা পোড়া</td><td>> 0.6</td></tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">⚙️ Rule Engine</h2>
+                    <p style="margin-bottom: 1rem;">JSON-based elimination logic mapping symptoms + observations to probable cause groups.</p>
+                    <div class="code-block">
+# Example Rule for Leaf Spot
+{
+  "leaf_spot": {
+    "observation_rules": {
+      "concentric_rings": {
+        "cause": "Fungal",
+        "confidence": 0.8
+      },
+      "water_soaked": {
+        "cause": "Bacterial", 
+        "confidence": 0.75
+      }
+    },
+    "default": {
+      "cause": "Fungal",
+      "confidence": 0.6
+    }
+  }
+}
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <strong>Allowed Causes:</strong>
+                        <span style="display: inline-block; background: #e8f5e9; padding: 0.25rem 0.75rem; border-radius: 9999px; margin: 0.25rem; font-size: 0.75rem;">Fungal</span>
+                        <span style="display: inline-block; background: #e8f5e9; padding: 0.25rem 0.75rem; border-radius: 9999px; margin: 0.25rem; font-size: 0.75rem;">Bacterial</span>
+                        <span style="display: inline-block; background: #e8f5e9; padding: 0.25rem 0.75rem; border-radius: 9999px; margin: 0.25rem; font-size: 0.75rem;">Viral</span>
+                        <span style="display: inline-block; background: #e8f5e9; padding: 0.25rem 0.75rem; border-radius: 9999px; margin: 0.25rem; font-size: 0.75rem;">Insect</span>
+                        <span style="display: inline-block; background: #e8f5e9; padding: 0.25rem 0.75rem; border-radius: 9999px; margin: 0.25rem; font-size: 0.75rem;">Nematode</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp Tab -->
+        <div id="whatsapp" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">💬 WhatsApp Flow</h2>
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div style="background: #006A4E; color: white; padding: 1rem; text-align: center;">
+                                <div style="font-weight: 700;">🌾 কৃষি পরামর্শ বট</div>
+                                <div style="font-size: 0.75rem; opacity: 0.9;">সরকারি সেবা</div>
+                            </div>
+                            <div style="flex: 1; overflow-y: auto; padding: 1rem;">
+                                <div style="background: #e8f5e9; padding: 0.75rem; border-radius: 16px; margin-bottom: 0.75rem; font-size: 0.875rem; border-bottom-left-radius: 4px;">
+                                    📸 ছবি পেয়েছি!<br><br>
+                                    কোন ফসলের ছবি পাঠিয়েছেন?
+                                </div>
+                                <button style="width: 100%; padding: 0.75rem; margin-bottom: 0.5rem; background: white; border: 2px solid #e0e0e0; border-radius: 8px; text-align: left;">🌾 ধান (Rice)</button>
+                                <button style="width: 100%; padding: 0.75rem; margin-bottom: 0.5rem; background: #e8f5e9; border: 2px solid #006A4E; border-radius: 8px; text-align: left;">🍆 বেগুন (Eggplant)</button>
+                                <button style="width: 100%; padding: 0.75rem; margin-bottom: 0.5rem; background: white; border: 2px solid #e0e0e0; border-radius: 8px; text-align: left;">🍅 টমেটো (Tomato)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">🔧 Integration Features</h2>
+                    <ul class="feature-list">
+                        <li><span style="color: #006A4E;">📱</span> <div><strong>Webhook Endpoint</strong> - /api/v1/whatsapp/webhook</div></li>
+                        <li><span style="color: #006A4E;">🔐</span> <div><strong>Token Verification</strong> - Secure webhook validation</div></li>
+                        <li><span style="color: #006A4E;">🖼️</span> <div><strong>Image Handling</strong> - Auto-download and process</div></li>
+                        <li><span style="color: #006A4E;">🔘</span> <div><strong>Button Messages</strong> - Interactive quick replies</div></li>
+                        <li><span style="color: #006A4E;">📝</span> <div><strong>Text Fallback</strong> - For older WhatsApp versions</div></li>
+                    </ul>
+                    <div class="alert" style="margin-top: 1rem;">
+                        <strong>📞 Helpline:</strong> All responses include <strong>16263</strong> (DAE Krishi Call Center) hotline.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile App Tab -->
+        <div id="mobile" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">📱 Flutter Mobile App</h2>
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div style="background: #006A4E; color: white; padding: 1.5rem 1rem; text-align: center;">
+                                <div style="font-size: 1.125rem; font-weight: 700;">🌾 ফসল স্বাস্থ্য পরামর্শ</div>
+                                <div style="font-size: 0.75rem; margin-top: 0.25rem;">জাতীয় AI-সহায়তা ব্যবস্থা</div>
+                            </div>
+                            <div style="flex: 1; padding: 1.5rem;">
+                                <div style="background: #e8f5e9; padding: 1.5rem; border-radius: 12px; text-align: center; margin-bottom: 1.5rem;">
+                                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">📸</div>
+                                    <div style="font-weight: 600; color: #006A4E;">ছবি তুলুন</div>
+                                    <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">রোগ নির্ণয়ের জন্য</div>
+                                </div>
+                                <div style="font-weight: 600; margin-bottom: 0.75rem; font-size: 0.875rem;">ফসল নির্বাচন করুন:</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                    <span style="background: #006A4E; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem;">🌾 ধান</span>
+                                    <span style="background: white; border: 2px solid #e0e0e0; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem;">🍆 বেগুন</span>
+                                    <span style="background: white; border: 2px solid #e0e0e0; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem;">🍅 টমেটো</span>
+                                </div>
+                                <button style="width: 100%; margin-top: 1.5rem; padding: 1rem; background: #006A4E; color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem;">
+                                    🔍 রোগ নির্ণয় করুন
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">⚡ Mobile Features</h2>
+                    <ul class="feature-list">
+                        <li><span style="color: #006A4E;">📷</span> <div><strong>Camera Integration</strong> - Direct image capture</div></li>
+                        <li><span style="color: #006A4E;">🗺️</span> <div><strong>GPS Location</strong> - Auto-detect district/upazila</div></li>
+                        <li><span style="color: #006A4E;">💾</span> <div><strong>Offline Mode</strong> - View advisory without internet</div></li>
+                        <li><span style="color: #006A4E;">📚</span> <div><strong>Knowledge Base</strong> - Offline crop guides</div></li>
+                        <li><span style="color: #006A4E;">📞</span> <div><strong>Direct Helpline</strong> - 16263 one-tap call</div></li>
+                        <li><span style="color: #006A4E;">🔔</span> <div><strong>Push Notifications</strong> - Pest outbreak alerts</div></li>
+                    </ul>
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: #f5f5f5; border-radius: 12px;">
+                        <strong>Tech Stack:</strong><br>
+                        Flutter 3.x • Camera Plugin • Geolocator • Hive (Local DB) • HTTP/Dio
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">📊 MIS Dashboard</h2>
+                    <ul class="feature-list">
+                        <li><span style="color: #006A4E;">📈</span> <div><strong>Top Symptoms</strong> - District-wise breakdown</div></li>
+                        <li><span style="color: #006A4E;">🐛</span> <div><strong>Pest Outbreak</strong> - Frequency tracking</div></li>
+                        <li><span style="color: #006A4E;">🌱</span> <div><strong>Nutrient Trends</strong> - Deficiency patterns</div></li>
+                        <li><span style="color: #006A4E;">📅</span> <div><strong>Monthly Volume</strong> - Diagnosis statistics</div></li>
+                        <li><span style="color: #006A4E;">🌦️</span> <div><strong>Climate Surge</strong> - Weather-linked detection</div></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2 style="color: #006A4E; margin-bottom: 1rem;">⚠️ Early Warning</h2>
+                    <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem;">
+                        <strong style="color: #e65100;">🚨 Active Alert</strong><br>
+                        Brown Plant Hopper outbreak detected in<br>
+                        <strong>Naogaon, Chapainawabganj</strong><br>
+                        47 cases reported in last 7 days
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div class="metric" style="background: #fee2e2;">
+                            <div class="metric-value" style="color: #dc2626;">3</div>
+                            <div class="metric-label">Critical Alerts</div>
+                        </div>
+                        <div class="metric" style="background: #fef3c7;">
+                            <div class="metric-value" style="color: #d97706;">12</div>
+                            <div class="metric-label">Medium Alerts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <h2 style="color: #006A4E; margin-bottom: 1rem;">🗺️ Geographic Distribution</h2>
+                <div style="height: 400px; background: #f5f5f5; border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <div style="text-align: center; color: #666;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🗺️</div>
+                        <div style="font-weight: 600;">Interactive Bangladesh Map</div>
+                        <div style="font-size: 0.875rem; margin-top: 0.5rem;">Heatmap of crop diseases by district</div>
+                    </div>
+                    <div style="position: absolute; top: 30%; left: 40%; background: #dc2626; color: white; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">12 cases<br>Dhaka</div>
+                    <div style="position: absolute; top: 20%; left: 60%; background: #f59e0b; color: white; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">8 cases<br>Rangpur</div>
+                    <div style="position: absolute; top: 50%; left: 30%; background: #dc2626; color: white; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">15 cases<br>Khulna</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliance Tab -->
+        <div id="compliance" class="tab-content">
+            <div class="grid">
+                <div class="card" style="border: 2px solid #f44336;">
+                    <h2 style="color: #f44336; margin-bottom: 1rem;">🚫 AI Must NOT</h2>
+                    <ul class="feature-list">
+                        <li style="color: #c62828;"><span>❌</span> <div><strong>Provide final disease confirmation</strong><br>Only human experts can confirm</div></li>
+                        <li style="color: #c62828;"><span>❌</span> <div><strong>Provide pesticide dosage</strong><br>Only ETL-based recommendations</div></li>
+                        <li style="color: #c62828;"><span>❌</span> <div><strong>Recommend unapproved products</strong><br>Only DAE-approved list</div></li>
+                        <li style="color: #c62828;"><span>❌</span> <div><strong>Override human officer</strong><br>AI is advisory only</div></li>
+                    </ul>
+                </div>
+
+                <div class="card" style="border: 2px solid #4caf50;">
+                    <h2 style="color: #4caf50; margin-bottom: 1rem;">✅ AI Must</h2>
+                    <ul class="feature-list">
+                        <li style="color: #2e7d32;"><span>✓</span> <div><strong>Log all outputs</strong><br>Complete audit trail</div></li>
+                        <li style="color: #2e7d32;"><span>✓</span> <div><strong>Be auditable</strong><br>All decisions traceable</div></li>
+                        <li style="color: #2e7d32;"><span>✓</span> <div><strong>Use knowledge base only</strong><br>BRRI/BARI/DAE approved content</div></li>
+                        <li style="color: #2e7d32;"><span>✓</span> <div><strong>Include disclaimer</strong><br>Every response</div></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <h2 style="color: #006A4E; margin-bottom: 1rem;">📋 Testing Checklist</h2>
+                <div class="grid">
+                    <div>
+                        <h4 style="color: #006A4E; margin-bottom: 0.5rem;">✓ Image Tests</h4>
+                        <ul style="list-style: none; font-size: 0.875rem; line-height: 1.8;">
+                            <li>☐ Healthy image test</li>
+                            <li>☐ Low-confidence image test</li>
+                            <li>☐ Nutrient deficiency test</li>
+                            <li>☐ Large file (10MB) test</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #006A4E; margin-bottom: 0.5rem;">✓ Integration Tests</h4>
+                        <ul style="list-style: none; font-size: 0.875rem; line-height: 1.8;">
+                            <li>☐ WhatsApp button test</li>
+                            <li>☐ Database log verification</li>
+                            <li>☐ Dashboard metric accuracy</li>
+                            <li>☐ API rate limiting test</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #006A4E; margin-bottom: 0.5rem;">✓ Content Tests</h4>
+                        <ul style="list-style: none; font-size: 0.875rem; line-height: 1.8;">
+                            <li>☐ Bangla explanation quality</li>
+                            <li>☐ Disclaimer presence</li>
+                            <li>☐ No brand names check</li>
+                            <li>☐ ETL condition check</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background: #1a1a1a; color: white; padding: 2rem; margin-top: 4rem; text-align: center;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <p style="margin-bottom: 1rem;">🇧🇩 Government of Bangladesh - Ministry of Agriculture</p>
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: 0.75rem; opacity: 0.8;">
+                <span>DAE Compliant</span>
+                <span>BRRI Authorized</span>
+                <span>BARI Certified</span>
+                <span>SRDI Integrated</span>
+                <span>BARC Approved</span>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.75rem; opacity: 0.6;">
+                Built with ❤️ for Bangladesh Farmers | Plantwise Protocol | AI-Assisted, Human-Supervised
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
